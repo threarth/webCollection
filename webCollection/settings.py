@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['threarth.pythonanywhere.com',
 
 INSTALLED_APPS = [
     'polls.apps.PollsConfig',
+    'songlist.apps.SonglistConfig',
+    'iommi',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'iommi.middleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
