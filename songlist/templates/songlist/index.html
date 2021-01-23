@@ -1,4 +1,7 @@
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'songlist/style.css' %}">
+{% extends "songlist/base.html" %}
 
-<h1> Benvenuto nella songlist!</h1>
+{% block content %}
+    <h1>{{ title }}</h1>
+
+    {{ content }}
+{% endblock %}

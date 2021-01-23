@@ -12,11 +12,49 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 
-from .models import Song
+from .models import Song, Artist, Album, Track, Tablist
 
-class IndexView(generic.ListView):
-    model = Song
-    template_name = 'songlist/index.html'
+from iommi import (
+    Table,
+    Column,
+)
+
+class AlbumsTable(Table):
+    title = Column()
+    artist = Column()
+    chords = Column()
+    pattern = Column()
+    fpath = Column()
+    note = Column()
+
+    class Meta:
+        title = 'Canzoniere'
+        rows = Tablist.objects.all()
+
+
+# def index(request):
+#     return AlbumsTable(
+#         title='Albums',
+#         rows=Album.objects.all(),
+#     )
+
+# def index(request):
+#     return render(
+#         request,
+#         template_name='songlist/index.html',
+#         context=dict(
+#             title='Canzoniere 2.0 realizzato con Django e Iommi in Python!',
+#             content=AlbumsTable(
+#                 rows=Album.objects.all(),
+#             ).bind(request=request),
+#         )
+#     )
+
+#
+#
+# class IndexView(generic.ListView):
+#     model = Song
+#     template_name = 'songlist/index.html'
 
     # ovveride default context from question_list to latest_question_list
 #    context_object_name = 'latest_question_list'
