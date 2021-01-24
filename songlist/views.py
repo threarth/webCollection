@@ -15,11 +15,25 @@ from django.utils import timezone
 from .models import Song, Artist, Album, Track, Tablist
 
 from iommi import (
+    Page,
     Table,
     Column,
+    html,
 )
 
-class AlbumsTable(Table):
+class IndexPage(Page):
+    title = html.h1('Benvenuti!')
+    welcome_text = 'Questa è una versione del canzoniere server-side'
+
+    tablist = Table(
+        auto__model=Tablist, page_size=5,
+        columns__title__cell__url=lambda row, **_: row.get_absolute_url(),
+        columns__artist__filter__include=True,
+        columns__title__filter__include=True,
+        columns__pattern__filter__include=True,
+    )
+
+class SonglistTable(Table):
     title = Column()
     artist = Column()
     chords = Column()

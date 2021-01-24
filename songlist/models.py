@@ -22,6 +22,9 @@ class Tablist(models.Model):
     page = models.CharField(max_length=25, db_index=True)
     filecomment = models.CharField(max_length=255, db_index=True)
 
+    def get_absolute_url(self):
+        return f'/title/{self.named_id}/'
+
 class Artist(models.Model):
     name = models.CharField(max_length=255, db_index=True)
 
