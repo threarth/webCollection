@@ -11,10 +11,12 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.template import Template
 
 from .models import Song, Artist, Album, Track, Tablist
 
 from iommi import (
+
     Page,
     Table,
     Column,
@@ -27,13 +29,41 @@ class IndexPage(Page):
 
     tablist = Table(
         auto__model=Tablist, page_size=100,
+        header__template=Template('''
+            <thead>
+                {% for headers in table.header_levels %}
+                <tr>
+                {% for header in headers %}
+
+                        <th>
+                            {% if header.url %}
+                                <a href="{{ header.url }}">
+                            {% endif %}
+                            {{ header.display_name }}
+                            {% if header.url %}
+                                </a>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                    </tr>
+                    {% endfor %}
+            </thead>
+
+        '''
+        ),
         columns__title__cell__url=lambda row, **_: row.get_absolute_url(),
+        columns__chords__cell__template=Template('''
+            <td style="color:red">{{ row.chords }}
+            </td>
+        '''),
         columns__artist__filter__include=True,
         columns__title__filter__include=True,
         columns__songbook__filter__include=True,
-    #    columns__count_filter__include=True,
+        columns__rank__filter__include=True,
+        columns__count__filter__include=True,
         columns__type__filter__include=True,
         columns__chords__filter__include=True,
+
     #    columns__rank__filter__include=True,
     )
 

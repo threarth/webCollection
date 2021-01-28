@@ -6,12 +6,26 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
+
+def load_csv_to_Tablist(filename):
+    with open(filename, "r", encoding="utf-8", errors="ignore") as f:
+        reader = csv.DictReader(f, delimiter=";")
+        l = []
+        for line in reader:
+            l.append(line)
+
+        Tablist.objects.all().delete()
+
+        for i in l:
+            j = Tablist(id = int(i['id']), artist = i['artista'], title = i['titolo'], songbook = i['canzoniere'], type = i['tipo'], count = int(i['n']), chords = i['accordi'], to_study = i['da_studiare'], rank = int(i['rank']), db_name = i['db_name'] )
+            j.save()
+
+
 class Tablist(models.Model):
 #   By default, Django gives each model the following field:
-#   id = models.AutoField(primary_key=True)
+    id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=255, db_index=True)
     db = models.CharField(max_length=255, db_index=True)
-    sid = models.IntegerField(db_index=True)
     artist = models.CharField(max_length=255, db_index=True)
     songbook = models.CharField(max_length=255, db_index=True)
     type = models.CharField(max_length=255, db_index=True)
@@ -20,9 +34,10 @@ class Tablist(models.Model):
     to_study = models.CharField(max_length=255, db_index=True)
     rank = models.IntegerField(db_index=True)
     db_name = models.CharField(max_length=255, db_index=True)
+    db_source = models.CharField(max_length=255, db_index=True)
 
     def get_absolute_url(self):
-        return f'http://www.grilliconsulting.com/a/music/viewer.html?id={self.sid}&db={self.db_name}'
+        return f'http://www.grilliconsulting.com/a/music/viewer.html?id={self.id}&db=all_all'
 
 class Artist(models.Model):
     name = models.CharField(max_length=255, db_index=True)
