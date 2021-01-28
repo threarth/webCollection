@@ -63,6 +63,7 @@ class IndexPage(Page):
         columns__count__filter__include=True,
         columns__type__filter__include=True,
         columns__chords__filter__include=True,
+        columns__to_study__filter__include=True,
 
     #    columns__rank__filter__include=True,
     )
