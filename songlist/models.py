@@ -9,21 +9,20 @@ from django.utils import timezone
 class Tablist(models.Model):
 #   By default, Django gives each model the following field:
 #   id = models.AutoField(primary_key=True)
-    named_id = models.CharField(max_length=50, db_index=True)
-    artist = models.CharField(max_length=255, db_index=True)
     title = models.CharField(max_length=255, db_index=True)
-    note = models.CharField(max_length=255, db_index=True)
-    count = models.IntegerField()
+    db = models.CharField(max_length=255, db_index=True)
+    sid = models.IntegerField(db_index=True)
+    artist = models.CharField(max_length=255, db_index=True)
+    songbook = models.CharField(max_length=255, db_index=True)
+    type = models.CharField(max_length=255, db_index=True)
+    count = models.IntegerField(db_index=True)
     chords = models.CharField(max_length=255, db_index=True)
-    chords_filename = models.CharField(max_length=255, db_index=True)
-    pattern = models.CharField(max_length=255, db_index=True)
-    fpath = models.CharField(max_length=255, db_index=True)
-    ftype = models.CharField(max_length=25, db_index=True)
-    page = models.CharField(max_length=25, db_index=True)
-    filecomment = models.CharField(max_length=255, db_index=True)
+    to_study = models.CharField(max_length=255, db_index=True)
+    rank = models.IntegerField(db_index=True)
+    db_name = models.CharField(max_length=255, db_index=True)
 
     def get_absolute_url(self):
-        return f'/title/{self.named_id}/'
+        return f'http://www.grilliconsulting.com/a/music/viewer.html?id={self.sid}&db={self.db_name}'
 
 class Artist(models.Model):
     name = models.CharField(max_length=255, db_index=True)

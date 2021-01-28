@@ -22,15 +22,19 @@ from iommi import (
 )
 
 class IndexPage(Page):
-    title = html.h1('Benvenuti!')
-    welcome_text = 'Questa è una versione del canzoniere server-side'
+    title = html.h1('Canzoniere reprise')
+    welcome_text = 'Proviamo questa nuova versione del canzoniere!'
 
     tablist = Table(
-        auto__model=Tablist, page_size=5,
+        auto__model=Tablist, page_size=100,
         columns__title__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__artist__filter__include=True,
         columns__title__filter__include=True,
-        columns__pattern__filter__include=True,
+        columns__songbook__filter__include=True,
+    #    columns__count_filter__include=True,
+        columns__type__filter__include=True,
+        columns__chords__filter__include=True,
+    #    columns__rank__filter__include=True,
     )
 
 class SonglistTable(Table):

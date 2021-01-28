@@ -1,0 +1,21 @@
+e = Tablist(_db = i['db'], _id = int(i['id']), _artist = i['artista'], _title = i['titolo'], _songbook = i['canzoniere'], _type = i['tipo'], _count = int(i['n']), _chords = i['accordi'], _to_study = i['da_studiare'], _rank = int(i['rank']), _db_name = i['db_name'] )
+
+
+
+
+
+l = csv.DictReader(open("csv.csv", "r", errors="ignore", encoding="utf-8"), delimiter=";")
+
+
+for line in l
+
+append line to dict list
+
+
+
+...
+
+
+ricordati di azzerare i campi int vuoti
+
+
