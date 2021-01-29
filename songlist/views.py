@@ -26,6 +26,8 @@ from iommi import (
 class IndexPage(Page):
     title = html.h1('Canzoniere reprise')
     welcome_text = 'Proviamo questa nuova versione del canzoniere!'
+    #attrs__div="style: max-width: 100%;"
+
 
     tablist = Table(
         auto__model=Tablist, page_size=100,
@@ -56,6 +58,13 @@ class IndexPage(Page):
             <td style="color:red">{{ row.chords }}
             </td>
         '''),
+    #   columns to render and order of columns
+        columns__db__render_column=False,
+        columns__db_name__render_column=False,
+        columns__db_source__render_column=False,
+        columns__title__after = 'artist',
+
+    #   filters
         columns__artist__filter__include=True,
         columns__title__filter__include=True,
         columns__songbook__filter__include=True,
