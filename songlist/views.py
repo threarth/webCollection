@@ -65,6 +65,7 @@ class IndexPage(Page):
         columns__title__after = 'artist',
 
     #   filters
+        columns__id__filter_include=True,
         columns__artist__filter__include=True,
         columns__title__filter__include=True,
         columns__songbook__filter__include=True,
