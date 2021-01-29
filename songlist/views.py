@@ -24,10 +24,11 @@ from iommi import (
 )
 
 class IndexPage(Page):
+    container_style = html.style(".container{max-width:100%;}")
+
     title = html.h1('Canzoniere reprise')
     welcome_text = 'Proviamo questa nuova versione del canzoniere!'
     #attrs__div="style: max-width: 100%;"
-
 
     tablist = Table(
         auto__model=Tablist, page_size=100,
@@ -53,11 +54,16 @@ class IndexPage(Page):
 
         '''
         ),
-        columns__title__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__chords__cell__template=Template('''
-            <td style="color:red">{{ row.chords }}
+        columns__title__cell__template=Template('''
+            <td>
+                <a href='http://www.grilliconsulting.com/a/music/viewer.html?id={{ row.id }}&db=all_all' target='_blank'>{{ row.title }}</a>
             </td>
         '''),
+    #    columns__title__cell__url=lambda row, **_: row.get_absolute_url(),
+    #    columns__chords__cell__template=Template('''
+    #        <td style="color:red">{{ row.chords }}
+    #        </td>
+    #    '''),
     #   columns to render and order of columns
         columns__db__render_column=False,
         columns__db_name__render_column=False,
