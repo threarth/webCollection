@@ -30,7 +30,7 @@ class Tablist(models.Model):
     type = models.CharField(max_length=255, db_index=True)
     count = models.IntegerField(db_index=True)
     chords = models.CharField(max_length=255, db_index=True)
-    to_study = models.CharField(max_length=255, db_index=True)
+    study = models.CharField(max_length=255, db_index=True)
     rank = models.IntegerField(db_index=True)
     db = models.CharField(max_length=255, db_index=True)
     db_name = models.CharField(max_length=255, db_index=True)

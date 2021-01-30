@@ -32,13 +32,17 @@ class IndexPage(Page):
     #th_Type{width: 3%;}
     #th_Count{width: 2%;}
     #th_Chords{width: 27%;}
-    #th_To_study{width: 18%;}
-    #th_To_rank{width: 2%;}
+    #th_Study{width: 18%;}
+    #th_Rank{width: 2%;}
     ''')
 
     tablist = Table(
         auto__model = Tablist,
         page_size = 100,
+    #   hide
+        columns__db__render_column=False,
+        columns__db_name__render_column=False,
+        columns__db_source__render_column=False,
 
     #   filters
         columns__id__filter__include=True,
@@ -48,7 +52,7 @@ class IndexPage(Page):
         columns__type__filter__include=True,
         columns__count__filter__include=True,
         columns__chords__filter__include=True,
-        columns__to_study__filter__include=True,
+        columns__study__filter__include=True,
         columns__rank__filter__include=True,
         columns__title__cell__template=Template('''
             <td>
@@ -91,9 +95,6 @@ class IndexPage(Page):
 # #        </td>
 # #    '''),
 # #   columns to render and order of columns
-#     columns__db__render_column=False
-#     columns__db_name__render_column=False
-#     columns__db_source__render_column=False
 #     columns__title__after = 'artist'
 #
 #
