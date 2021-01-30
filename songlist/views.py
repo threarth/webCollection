@@ -23,66 +23,106 @@ from iommi import (
     html,
 )
 
-class IndexPage(Page):
-    container_style = html.style(".container{max-width:100%;}")
+class TabTable(Table):
 
-    title = html.h1('Canzoniere reprise')
-    welcome_text = 'Proviamo questa nuova versione del canzoniere!'
-    #attrs__div="style: max-width: 100%;"
+    id = Column()
+    artist = Column()
+    title = Column()
+    songbook = Column()
+    type = Column()
+    count = Column()
+    chords = Column()
+    to_study = Column()
+    rank = Column()
 
-    tablist = Table(
-        auto__model=Tablist, page_size=100,
-        header__template=Template('''
-            <thead>
-                {% for headers in table.header_levels %}
-                <tr>
-                {% for header in headers %}
+    class Meta:
+        title = "Canzoniere"
+        rows = Tablist.objects.all()
+        page_size = 100
+#   filters
+        columns__id__filter__include=True
+        columns__artist__filter__include=True
+        columns__title__filter__include=True
+        columns__songbook__filter__include=True
+        columns__rank__filter__include=True
+        columns__count__filter__include=True
+        columns__type__filter__include=True
+        columns__chords__filter__include=True
+        columns__to_study__filter__include=True
 
-                        <th>
-                            {% if header.url %}
-                                <a href="{{ header.url }}">
-                            {% endif %}
-                            {{ header.display_name }}
-                            {% if header.url %}
-                                </a>
-                            {% endif %}
-                        </th>
-                    {% endfor %}
-                    </tr>
-                    {% endfor %}
-            </thead>
-
-        '''
-        ),
         columns__title__cell__template=Template('''
             <td>
                 <a href='http://www.grilliconsulting.com/a/music/viewer.html?id={{ row.id }}&db=all_all' target='_blank'>{{ row.title }}</a>
             </td>
-        '''),
-    #    columns__title__cell__url=lambda row, **_: row.get_absolute_url(),
-    #    columns__chords__cell__template=Template('''
-    #        <td style="color:red">{{ row.chords }}
-    #        </td>
-    #    '''),
-    #   columns to render and order of columns
-        columns__db__render_column=False,
-        columns__db_name__render_column=False,
-        columns__db_source__render_column=False,
-        columns__title__after = 'artist',
+         ''')
+#        header__template__th_width_list = {"th_width_list": "2"}
+        header__template=Template('''
+             <thead>
+                 {% for headers in table.header_levels %}
+                 <tr>
+                 {% for header in headers %}
+                         <th id=th_{{ header.display_name }}>
+                             {% if header.url %}
+                                 <a href="{{ header.url }}">
+                             {% endif %}
+                             {{ header.display_name }}
+                             {% if header.url %}
+                                 </a>
+                             {% endif %}
+                         </th>
+                     {% endfor %}
+                     </tr>
+                     {% endfor %}
+             </thead>
+         ''')
 
-    #   filters
-        columns__id__filter__include=True,
-        columns__artist__filter__include=True,
-        columns__title__filter__include=True,
-        columns__songbook__filter__include=True,
-        columns__rank__filter__include=True,
-        columns__count__filter__include=True,
-        columns__type__filter__include=True,
-        columns__chords__filter__include=True,
-        columns__to_study__filter__include=True,
 
-    #    columns__rank__filter__include=True,
-    )
+#     auto__model=Tablist
+#     page_size=100
+#
+#     columns__title__cell__template=Template('''
+#         <td>
+#             <a href='http://www.grilliconsulting.com/a/music/viewer.html?id={{ row.id }}&db=all_all' target='_blank'>{{ row.title }}</a>
+#         </td>
+#     '''),
+# #    columns__title__cell__url=lambda row, **_: row.get_absolute_url(),
+# #    columns__chords__cell__template=Template('''
+# #        <td style="color:red">{{ row.chords }}
+# #        </td>
+# #    '''),
+# #   columns to render and order of columns
+#     columns__db__render_column=False
+#     columns__db_name__render_column=False
+#     columns__db_source__render_column=False
+#     columns__title__after = 'artist'
+#
+#
+# #    columns__rank__filter__include=True,
+
+
+class IndexPage(Page):
+    container_style = html.style(".container{max-width:100%;}")
+    th_style = html.style('''
+    #th_Id{width: 3%;}
+    #th_Artist{width: 15%;}
+    #th_Title{width: 15%;}
+    #th_Songbook{width: 15%;}
+    #th_Type{width: 3%;}
+    #th_Count{width: 2%;}
+    #th_Chords{width: 27%;}
+    #th_To_study{width: 18%;}
+    #th_To_rank{width: 2%;}
+    ''')
+    tablist = TabTable()
+    #attrs__div="style: max-width: 100%;"
+
+#    table = Tablist()
+
+#    parts__tablist__context = {"th_width_list": "prova"}
+
+#    parts__tablist__query__form__fields__rank__input__attrs=('prova')
+
+
 
 class SonglistTable(Table):
     title = Column()
