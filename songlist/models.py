@@ -8,7 +8,7 @@ from django.utils import timezone
 
 
 def load_csv_to_Tablist(filename):
-    with open(filename, "r", encoding="utf-8", errors="ignore") as f:
+    with open(filename, "r", encoding="iso-8859-1", errors="ignore") as f:
         reader = csv.DictReader(f, delimiter=";")
         l = []
         for line in reader:
@@ -24,15 +24,15 @@ def load_csv_to_Tablist(filename):
 class Tablist(models.Model):
 #   By default, Django gives each model the following field:
     id = models.IntegerField(primary_key=True)
-    title = models.CharField(max_length=255, db_index=True)
-    db = models.CharField(max_length=255, db_index=True)
     artist = models.CharField(max_length=255, db_index=True)
+    title = models.CharField(max_length=255, db_index=True)
     songbook = models.CharField(max_length=255, db_index=True)
     type = models.CharField(max_length=255, db_index=True)
     count = models.IntegerField(db_index=True)
     chords = models.CharField(max_length=255, db_index=True)
     to_study = models.CharField(max_length=255, db_index=True)
     rank = models.IntegerField(db_index=True)
+    db = models.CharField(max_length=255, db_index=True)
     db_name = models.CharField(max_length=255, db_index=True)
     db_source = models.CharField(max_length=255, db_index=True)
 
