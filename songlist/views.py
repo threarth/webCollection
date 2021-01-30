@@ -64,10 +64,12 @@ class IndexPage(Page):
                  $("form")[0].dispatchEvent(evt);
              }
              </script>
+             <br>
              <div class="btn-group">
                 <button id="id_reset" class="btn btn-primary" type="button" onclick="resetForm()" title="Reset">Reset
                 </button>
              </div>
+             <br><br>
              <thead>
                  {% for headers in table.header_levels %}
                  <tr>
