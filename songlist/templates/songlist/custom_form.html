@@ -1,0 +1,15 @@
+<script>
+  function resetForm(){
+      document.querySelectorAll('input[type=text]').forEach(x => x.value="")
+      var evt = document.createEvent("HTMLEvents");
+      evt.initEvent("change", false, true);
+      $("form")[0].dispatchEvent(evt);
+}
+
+function updateDb(){
+     alert("Ciao!");
+}
+
+
+
+</script>

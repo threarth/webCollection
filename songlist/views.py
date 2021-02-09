@@ -1,12 +1,14 @@
-from django.shortcuts import render
+#from django.shortcuts import render
 
 from django.http import HttpResponse, HttpResponseRedirect
 #from django.template import loader
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
-from django.views import generic
+#from django.views import generic
 from django.utils import timezone
 from django.template import Template
+
+#from django import forms
 
 from .models import Song, Artist, Album, Track, Tablist
 
@@ -14,23 +16,141 @@ from iommi import (
     Page,
     Table,
     Column,
+    Action,
+    Fragment,
     html,
+    Field,
+    Form,
 )
 
-class IndexPage(Page):
-    container_style = html.style(".container{max-width:100%;}")
-    th_style = html.style('''
-    #th_Id{width: 3%;}
-    #th_Artist{width: 15%;}
-    #th_Title{width: 15%;}
-    #th_Songbook{width: 15%;}
-    #th_Type{width: 3%;}
-    #th_Count{width: 2%;}
-    #th_Chords{width: 27%;}
-    #th_Study{width: 18%;}
-    #th_Rank{width: 2%;}
-    ''')
+from iommi.style_bootstrap import bootstrap
+from .csv_decode import load_open_file_to_Tablist
 
+from django.conf import settings
+from pathlib import Path
+import os
+import logging
+# for file uploading
+CSV_FILE = os.path.join(settings.BASE_DIR, 'songlist/media/current_csv')
+
+class FileForm(Form):
+    filename = Field.file(attrs__style__color='blue', display_name='Seleziona file...')
+
+    class Meta:
+         @staticmethod
+         def actions__submit__post_handler(form, **_):
+             if not form.is_valid():
+                 return
+
+             if (form.get_request().method == 'POST'):
+                 print(form.fields.filename.value)
+                 print('Richiesta POST!')
+
+                 request = form.get_request()
+                 file = request.FILES['filename']
+
+                 with open(CSV_FILE, 'wb+') as destination:
+                     today = timezone.now()
+                     date_string = f'{today.day}/{today.month}/{today.year}, {today.hour}:{today.minute}:{today.second}\n'
+                     destination.write(date_string.encode('ascii'))
+                     for chunk in file.chunks():
+                         destination.write(chunk)
+
+                 return HttpResponseRedirect('update')
+
+         attrs__class = {'container': True,}
+         attrs__enctype = 'multipart/form-data'
+         attrs__style = {'max-width': '100%'}
+        # actions__submit__attrs__class = {'row': True,
+        #                                  'btn-primary': False,
+        #                                  'btn-outline-primary': True,}
+         fields__filename__attrs__class = {'row': True,}
+
+
+class UpdatePage(Page):
+    title = html.h1('Carica il CSV...', attrs__class={'text-primary': True})
+    file_form = FileForm()
+
+    context = {'errors': "",
+               'count': "",
+               'date': "",
+               'update': "",}
+    content = Template("""
+    <br>
+    {% if errors %}
+        <div class="alert alert-warning">{{errors}}</div>
+    {% else %}
+        {% if update %}
+            <div class="alert alert-success">{{update}}</div>
+        {% endif %}
+        <div class="alert alert-success">Records found: {{count}}</div>
+        <div class="alert alert-info">Content of CSV loaded on {{date}}:</div>
+        <script>
+            function updateDB(){
+                let pass = "?pass=" + $('#input_pass').val();
+                alert('Se la parola chiave è corretta, ci vorranno alcuni minuti prima che il database sia aggiornato; per piacere, attendi senza ricaricare la pagina!')
+
+                window.location.search = pass;
+            }
+        </script>
+        <button class='btn btn-outline-primary' onclick='updateDB()'>Update DB</button>
+        <input type='text' placeholder='Insert passphrase' id='input_pass'>
+        <div class="alert alert-light">{{dict}}</div>
+    {% endif %}
+    """)
+
+def update_view(request):
+    dict = []
+    dict_len = 0
+    errors = ""
+    update_result = ""
+    pass_string = ""
+    date_string = ""
+
+    try:
+        with open(CSV_FILE, "r", encoding="iso-8859-1") as f:
+            errors, date_string, dict, dict_len = load_open_file_to_Tablist(f)
+    except IOError:
+        errors = "CSV_FILE non disponibile.\n"
+
+    query_string = request.META['QUERY_STRING']
+
+    if (query_string):
+        pass_string = request.GET['pass']
+
+    print(pass_string)
+
+    if (pass_string == 'sierraUniform'):
+        print('Updating DB!')
+        Tablist.objects.all().delete()
+
+        for i in dict:
+             j = Tablist(
+                 id = int(i['id']),
+                 artist = i['artist'],
+                 title = i['title'],
+                 songbook = i['songbook'],
+                 type = i['type'],
+                 count = int(i['count']),
+                 chords = i['chords'],
+                 study = i['study'],
+                 rank = int(i['rank']),
+                 db_name = i['db_name'],
+                 )
+             j.save()
+
+        update_result = 'Successful update!'
+
+    return UpdatePage(context__errors = errors, context__update = update_result, context__count = dict_len,
+                      context__dict = dict, context__date = date_string)
+
+
+
+
+class IndexPage(Page):
+    custom_script = Fragment(template='songlist/custom_form.html')
+#    file_form = FileForm()
+    link = html.a('Update the DB!', attrs__href='update')
     tablist = Table(
         auto__model = Tablist,
         page_size = 100,
@@ -50,44 +170,33 @@ class IndexPage(Page):
         columns__study__filter__include=True,
         columns__rank__filter__include=True,
         columns__title__cell__template=Template('''
-            <td>
+            <td class='cellContent'>
                 <a href='http://www.grilliconsulting.com/a/music/viewer.html?id={{ row.id }}&db=all_all' target='_blank'>{{ row.title }}</a>
             </td>
          '''),
 
-        header__template=Template('''
-             <script>
-             function resetForm(){
-                 document.querySelectorAll('input[type=text]').forEach(x => x.value="")
-                 var evt = document.createEvent("HTMLEvents");
-                 evt.initEvent("change", false, true);
-                 $("form")[0].dispatchEvent(evt);
-             }
-             </script>
-             <br>
-             <div class="btn-group">
-                <button id="id_reset" class="btn btn-primary" type="button" onclick="resetForm()" title="Reset">Reset
-                </button>
-             </div>
-             <br><br>
-             <thead>
-                 {% for headers in table.header_levels %}
-                 <tr>
-                 {% for header in headers %}
-                         <th id=th_{{ header.display_name }}>
-                             {% if header.url %}
-                                 <a href="{{ header.url }}">
-                             {% endif %}
-                             {{ header.display_name }}
-                             {% if header.url %}
-                                 </a>
-                             {% endif %}
-                         </th>
-                     {% endfor %}
-                     </tr>
-                     {% endfor %}
-             </thead>
-         '''),
+        #  container and header style attrs
+        #  container__attrs__style={'max-width': '100%'},
+        columns__id__header__attrs__style__width='3%',
+        columns__artist__header__attrs__style__width='15%',
+        columns__title__header__attrs__style__width='15%',
+        columns__songbook__header__attrs__style__width='15%',
+        columns__type__header__attrs__style__width='3%',
+        columns__count__header__attrs__style__width='2%',
+        columns__chords__header__attrs__style__width='27%',
+        columns__study__header__attrs__style__width='18%',
+        columns__rank__header__attrs__style__width='2%',
+
+        #  query form other actions buttons
+        #  query__form__fields__hidden1=Field.hidden(),
+
+        #  query__form__fields__hidden1__attrs__style={'color': 'white',},
+        #  query__form__fields__hidden1__input__attrs__style={'pointer-events': 'none;',
+        #                                              'border': 'none',},
+
+        query__form__actions__reset=Action.button(display_name='Reset', attrs__onclick='resetForm()', attrs__class={
+                                                            'btn': True, 'btn-primary': True, 'btn-secondary': False,}),
+
       )
 
 
