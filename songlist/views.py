@@ -81,7 +81,7 @@ class UpdatePage(Page):
     content = Template("""
     <br>
        {% if date %}<div class="alert alert-info">file {{date}}</div>{% endif %}
-    
+
     {% if errors %}
         <div class="alert alert-warning">{{errors}}</div>
     {% else %}
@@ -125,7 +125,7 @@ def update_view(request):
     if (query_string):
         pass_string = request.GET['pass']
 
-    print(pass_string)
+#    print(pass_string)
 
     if (pass_string == 'sierraUniform'):
         print('Updating DB!')
