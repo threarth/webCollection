@@ -30,6 +30,8 @@ from django.conf import settings
 from pathlib import Path
 import os
 import logging
+import codecs
+
 # for file uploading
 CSV_FILE = os.path.join(settings.BASE_DIR, 'songlist/media/current_csv')
 
@@ -49,10 +51,11 @@ class FileForm(Form):
                  request = form.get_request()
                  file = request.FILES['filename']
 
+                 # with codecs.open(CSV_FILE, "wb+", "ISO-8859-1") as destination:
                  with open(CSV_FILE, 'wb+') as destination:
                      today = timezone.now()
-                     date_string = f'{today.day}/{today.month}/{today.year}, {today.hour}:{today.minute}:{today.second}\n'
-                     destination.write(date_string.encode('ascii'))
+                     date_string = f'date: {today.day}/{today.month}/{today.year}, {today.hour}:{today.minute}:{today.second}\n'
+                     destination.write(date_string.encode('utf_8'))
                      for chunk in file.chunks():
                          destination.write(chunk)
 
@@ -77,24 +80,28 @@ class UpdatePage(Page):
                'update': "",}
     content = Template("""
     <br>
+       {% if date %}<div class="alert alert-info">file {{date}}</div>{% endif %}
+    
     {% if errors %}
         <div class="alert alert-warning">{{errors}}</div>
     {% else %}
         {% if update %}
             <div class="alert alert-success">{{update}}</div>
+        {% else %}
+               <script>
+                   function updateDB(){
+                       let pass = "?pass=" + $('#input_pass').val();
+                       alert('Se la parola chiave è corretta, ci vorranno alcuni minuti prima che il database sia aggiornato; per piacere, attendi senza ricaricare la pagina!')
+
+                       window.location.search = pass;
+                   }
+               </script>
+               <button class='btn btn-outline-primary' onclick='updateDB()'>Update DB</button>
+               <input type='text' placeholder='Insert passphrase' id='input_pass'>
+              <br><br>
         {% endif %}
         <div class="alert alert-success">Records found: {{count}}</div>
-        <div class="alert alert-info">Content of CSV loaded on {{date}}:</div>
-        <script>
-            function updateDB(){
-                let pass = "?pass=" + $('#input_pass').val();
-                alert('Se la parola chiave è corretta, ci vorranno alcuni minuti prima che il database sia aggiornato; per piacere, attendi senza ricaricare la pagina!')
-
-                window.location.search = pass;
-            }
-        </script>
-        <button class='btn btn-outline-primary' onclick='updateDB()'>Update DB</button>
-        <input type='text' placeholder='Insert passphrase' id='input_pass'>
+        <div class="alert alert-info">Content of CSV:</div>
         <div class="alert alert-light">{{dict}}</div>
     {% endif %}
     """)
@@ -108,7 +115,7 @@ def update_view(request):
     date_string = ""
 
     try:
-        with open(CSV_FILE, "r", encoding="iso-8859-1") as f:
+        with open(CSV_FILE, "r", encoding="utf_8") as f:
             errors, date_string, dict, dict_len = load_open_file_to_Tablist(f)
     except IOError:
         errors = "CSV_FILE non disponibile.\n"

@@ -27,16 +27,15 @@ def load_csv_to_Tablist(filename):
         #     )
         #     j.save()
 
-must_have_keys = ('id', 'artist', 'title',
-               'songbook', 'type', 'count',
-               'chords', 'study', 'rank',
-               'db_name')
-
 def load_open_file_to_Tablist(file):
     keep_output = ""
     change_output = ""
-
+    #date_string = ""
     date_string = file.readline().strip()
+
+    if (not date_string.startswith('date')):
+        file.seek(0)
+        date_string = 'date not found!'
 
 #    reader = DictReader(io.StringIO(file.read()code('iso-8859-1')), delimiter=";")
     reader = DictReader(io.StringIO(file.read()), delimiter=";")
@@ -45,7 +44,10 @@ def load_open_file_to_Tablist(file):
     for line in reader:
         l.append(line)
 
-
+    must_have_keys = ('id', 'artist', 'title',
+                   'songbook', 'type', 'count',
+                   'chords', 'study', 'rank',
+                   'db_name')
 
     new_keys = tuple(l[0].keys())
 
