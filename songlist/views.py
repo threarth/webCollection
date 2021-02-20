@@ -113,6 +113,7 @@ def update_view(request):
     update_result = ""
     pass_string = ""
     date_string = ""
+    bulk_array = []
 
     try:
         with open(CSV_FILE, "r", encoding="utf_8") as f:
@@ -144,9 +145,11 @@ def update_view(request):
                  rank = int(i['rank']),
                  db_name = i['db_name'],
                  )
-             j.save()
+             bulk_array.append(j)
 
+        Tablist.objects.bulk_create(bulk_array)
         update_result = 'Successful update!'
+        print("Update Complete!")
 
     return UpdatePage(context__errors = errors, context__update = update_result, context__count = dict_len,
                       context__dict = dict, context__date = date_string)
