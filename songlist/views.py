@@ -204,7 +204,7 @@ class IndexPage(Page):
         #  query__form__fields__hidden1__input__attrs__style={'pointer-events': 'none;',
         #                                              'border': 'none',},
 
-        query__form__actions__reset=Action.button(display_name='Reset', attrs_type='button', attrs__onclick='resetForm()', attrs__class={
+        query__form__actions__reset=Action.button(display_name='Reset', attrs__type='button', attrs__onclick='resetForm()', attrs__class={
                                                             'btn': True, 'btn-primary': True, 'btn-secondary': False,}),
 
       )
