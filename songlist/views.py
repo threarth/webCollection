@@ -96,7 +96,7 @@ class UpdatePage(Page):
                    }
                </script>
                <button class='btn btn-outline-primary' onclick='updateDB()'>Sync DB with last submitted file</button>
-               <input type='text' placeholder='Insert passphrase' id='input_pass'>
+               <input type='password' placeholder='Insert passphrase' id='input_pass'>
               <br><br>
         {% endif %}
 
