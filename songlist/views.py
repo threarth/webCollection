@@ -80,7 +80,6 @@ class UpdatePage(Page):
                'update': "",}
     content = Template("""
     <br>
-       {% if date %}<div class="alert alert-info">file {{date}}</div>{% endif %}
 
     {% if errors %}
         <div class="alert alert-warning">{{errors}}</div>
@@ -96,13 +95,15 @@ class UpdatePage(Page):
                        window.location.search = pass;
                    }
                </script>
-               <button class='btn btn-outline-primary' onclick='updateDB()'>Update DB</button>
+               <button class='btn btn-outline-primary' onclick='updateDB()'>Sync DB with last submitted file</button>
                <input type='text' placeholder='Insert passphrase' id='input_pass'>
               <br><br>
         {% endif %}
-        <div class="alert alert-success">Records found: {{count}}</div>
-        <div class="alert alert-info">Content of CSV:</div>
-        <div class="alert alert-light">{{dict}}</div>
+
+        {% if date %}<div class="alert alert-info">Last file submitted in {{date}}</div>
+                    <div class="alert alert-light">
+                    <b>Found {{count}} in last submitted file. File content:</b><br>{{dict}}</div>
+        {% endif %}
     {% endif %}
     """)
 
